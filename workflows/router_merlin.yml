@@ -1,0 +1,23 @@
+on:
+  webhook:
+    method: post
+jobs:
+  bark-notify-device-online:
+    if: on.webhook.outputs.body.msgTYPE == 'newDHCP'
+    name: Bark notify device online
+    runs-on: ubuntu-latest
+    steps:
+      - name: Push notification
+        uses: monlor/bark-action@v3
+        with:
+          key: ${{ secrets.BARK_KEY }}
+          title: ${{ on.webhook.outputs.body.cliNAME }} is online
+          body: |
+            IP: ${{ on.webhook.outputs.body.cliIP }}
+            MAC address: ${{ on.webhook.outputs.body.cliMAC }}
+            Up time: ${{ on.webhook.outputs.body.upTIME }}
+            Expiry time: ${{ on.webhook.outputs.body.expTIME }}
+          group: Router-AX86U
+          sound: anticipate
+          isArchive: 1
+          url: ${{ secrets.ROUTER_URL }}
